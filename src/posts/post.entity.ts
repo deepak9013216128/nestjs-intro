@@ -8,12 +8,12 @@ import {
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
-} from "typeorm";
-import { postType } from "./enums/postType.enum";
-import { postStatus } from "./enums/postStatus.enum";
-import { MetaOption } from "src/meta-options/meta-option.entity";
-import { User } from "src/users/user.entity";
-import { Tag } from "src/tags/tag.entity";
+} from 'typeorm';
+import { postType } from './enums/postType.enum';
+import { postStatus } from './enums/postStatus.enum';
+import { MetaOption } from 'src/meta-options/meta-option.entity';
+import { User } from 'src/users/user.entity';
+import { Tag } from 'src/tags/tag.entity';
 
 @Entity()
 export class Post {
@@ -21,14 +21,14 @@ export class Post {
   id: number;
 
   @Column({
-    type: "varchar",
+    type: 'varchar',
     length: 512,
     nullable: false,
   })
   title: string;
 
   @Column({
-    type: "enum",
+    type: 'enum',
     enum: postType,
     nullable: false,
     default: postType.post,
@@ -36,7 +36,7 @@ export class Post {
   postType: postType;
 
   @Column({
-    type: "varchar",
+    type: 'varchar',
     length: 256,
     unique: true,
     nullable: false,
@@ -44,7 +44,7 @@ export class Post {
   slug: string;
 
   @Column({
-    type: "enum",
+    type: 'enum',
     enum: postStatus,
     default: postStatus.draft,
     nullable: false,
@@ -52,26 +52,26 @@ export class Post {
   status: postStatus;
 
   @Column({
-    type: "text",
+    type: 'text',
     nullable: true,
   })
   content?: string;
 
   @Column({
-    type: "text",
+    type: 'text',
     nullable: true,
   })
   schema?: string;
 
   @Column({
-    type: "varchar",
+    type: 'varchar',
     length: 1024,
     nullable: true,
   })
   featuredImageUrl?: string;
 
   @Column({
-    type: "timestamp", // datetime in sql
+    type: 'timestamp', // datetime in sql
     nullable: true,
   })
   publishOn?: Date;

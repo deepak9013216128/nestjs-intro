@@ -1,11 +1,11 @@
-import { Post } from "src/posts/post.entity";
+import { Post } from 'src/posts/post.entity';
 import {
   Column,
   PrimaryColumn,
   Entity,
   PrimaryGeneratedColumn,
   OneToMany,
-} from "typeorm";
+} from 'typeorm';
 
 @Entity()
 export class User {
@@ -20,16 +20,16 @@ export class User {
   email: string;
 
   @Column({
-    type: "varchar",
+    type: 'varchar',
     length: 96,
     nullable: false,
   })
   password: string;
 
-  @Column({ type: "varchar", length: 96, nullable: false })
+  @Column({ type: 'varchar', length: 96, nullable: false })
   firstName: string;
 
-  @Column({ type: "varchar", length: 96, nullable: true })
+  @Column({ type: 'varchar', length: 96, nullable: true })
   lastName: string;
 
   @OneToMany(() => Post, (post) => post.author)

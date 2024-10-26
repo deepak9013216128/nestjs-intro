@@ -1,10 +1,10 @@
-import { Inject, Injectable, forwardRef } from "@nestjs/common";
-import { GetUsersParamDto } from "../dtos/get-users-param.dto";
-import { AuthService } from "src/auth/provider/auth.service";
-import { InjectRepository } from "@nestjs/typeorm";
-import { User } from "../user.entity";
-import { Repository } from "typeorm";
-import { CreateUserDto } from "../dtos/create-user.dto";
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import { GetUsersParamDto } from '../dtos/get-users-param.dto';
+import { AuthService } from 'src/auth/provider/auth.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from '../user.entity';
+import { Repository } from 'typeorm';
+import { CreateUserDto } from '../dtos/create-user.dto';
 
 /**
  * Class to connect to Users table and perform business operations
@@ -17,7 +17,7 @@ export class UsersService {
     private readonly authService: AuthService,
 
     @InjectRepository(User)
-    private userRepository: Repository<User>
+    private userRepository: Repository<User>,
   ) {}
 
   async createUser(createUserDto: CreateUserDto) {
@@ -26,7 +26,7 @@ export class UsersService {
     });
 
     if (existingUser) {
-      return "User already exist";
+      return 'User already exist';
     }
 
     let newUser = this.userRepository.create(createUserDto);
@@ -38,16 +38,16 @@ export class UsersService {
   /** Find all users */
   findAll(getUserParamDto: GetUsersParamDto, limit: number, page: number) {
     if (!this.authService.isAuth()) {
-      return "Forbidden";
+      return 'Forbidden';
     }
     return [
       {
-        firstName: "Deepak",
-        LastName: "Kumar",
+        firstName: 'Deepak',
+        LastName: 'Kumar',
       },
       {
-        firstName: "John",
-        lastName: "Doe",
+        firstName: 'John',
+        lastName: 'Doe',
       },
     ];
   }

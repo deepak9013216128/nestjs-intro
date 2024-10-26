@@ -6,7 +6,7 @@ import {
   Matches,
   MaxLength,
   MinLength,
-} from "class-validator";
+} from 'class-validator';
 
 export class CreateUserDto {
   @IsString()
@@ -32,7 +32,7 @@ export class CreateUserDto {
   @MaxLength(96)
   @Matches(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/, {
     message:
-      "Minimum eight characters, at least one letter, one number and one special character",
+      'Minimum eight characters, at least one letter, one number and one special character',
   })
   password: string;
 }

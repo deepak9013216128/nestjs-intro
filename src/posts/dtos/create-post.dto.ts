@@ -12,17 +12,17 @@ import {
   MaxLength,
   MinLength,
   ValidateNested,
-} from "class-validator";
-import { postStatus } from "../enums/postStatus.enum";
-import { postType } from "../enums/postType.enum";
-import { Type } from "class-transformer";
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { CreateMetaOptionsDto } from "src/meta-options/dtos/create-post-meta-options.dto";
+} from 'class-validator';
+import { postStatus } from '../enums/postStatus.enum';
+import { postType } from '../enums/postType.enum';
+import { Type } from 'class-transformer';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { CreateMetaOptionsDto } from 'src/meta-options/dtos/create-post-meta-options.dto';
 
 export class CreatePostDto {
   @ApiProperty({
-    description: "this is title of post",
-    example: "this is title",
+    description: 'this is title of post',
+    example: 'this is title',
   })
   @IsString()
   @MinLength(3)
@@ -40,7 +40,7 @@ export class CreatePostDto {
 
   @ApiProperty({
     description: 'For Example - "my-url"',
-    example: "my-blog-post",
+    example: 'my-blog-post',
   })
   @IsString()
   @IsNotEmpty()
@@ -53,7 +53,7 @@ export class CreatePostDto {
 
   @ApiPropertyOptional({
     description:
-      "Serialize your json object else a validation error will be thrown",
+      'Serialize your json object else a validation error will be thrown',
     example: '{"url":"http://google.com"}',
   })
   @IsJSON()
@@ -61,8 +61,8 @@ export class CreatePostDto {
   schema?: string;
 
   @ApiPropertyOptional({
-    description: "image url",
-    example: "http://google.com",
+    description: 'image url',
+    example: 'http://google.com',
   })
   @IsUrl()
   @MaxLength(1024)
@@ -77,24 +77,24 @@ export class CreatePostDto {
   status: postStatus;
 
   @ApiPropertyOptional({
-    description: "this is content of post",
-    example: "this is content of my blog post",
+    description: 'this is content of post',
+    example: 'this is content of my blog post',
   })
   @IsString()
   @IsOptional()
   content?: string;
 
   @ApiPropertyOptional({
-    description: "this is date on blog post published",
-    example: "2024-01-01",
+    description: 'this is date on blog post published',
+    example: '2024-01-01',
   })
   @IsISO8601()
   @IsOptional()
   publishOn?: string;
 
   @ApiPropertyOptional({
-    description: "Array of tags passes as string",
-    example: ["nestjs", "typescript"],
+    description: 'Array of tags passes as string',
+    example: ['nestjs', 'typescript'],
   })
   @IsOptional()
   @IsArray()
@@ -102,14 +102,14 @@ export class CreatePostDto {
   tags?: number[];
 
   @ApiPropertyOptional({
-    type: "object",
+    type: 'object',
     required: false,
     items: {
-      type: "object",
+      type: 'object',
       properties: {
         metaValue: {
-          type: "json",
-          description: "meta value is json string",
+          type: 'json',
+          description: 'meta value is json string',
           example: '{"sidebarEnalbed": true}',
         },
       },
@@ -120,7 +120,7 @@ export class CreatePostDto {
   @Type(() => CreateMetaOptionsDto)
   metaOptions?: CreateMetaOptionsDto | null;
 
-  @ApiProperty({ type: "integer", required: true, example: 1 })
+  @ApiProperty({ type: 'integer', required: true, example: 1 })
   @IsInt()
   @IsNotEmpty()
   authorId: number;

@@ -1,10 +1,10 @@
-import { Injectable } from "@nestjs/common";
-import { UsersService } from "src/users/providers/users.service";
-import { Repository } from "typeorm";
-import { Post } from "../post.entity";
-import { InjectRepository } from "@nestjs/typeorm";
-import { CreatePostDto } from "../dtos/create-post.dto";
-import { TagsService } from "src/tags/providers/tags.service";
+import { Injectable } from '@nestjs/common';
+import { UsersService } from 'src/users/providers/users.service';
+import { Repository } from 'typeorm';
+import { Post } from '../post.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CreatePostDto } from '../dtos/create-post.dto';
+import { TagsService } from 'src/tags/providers/tags.service';
 
 @Injectable()
 export class PostsService {
@@ -12,7 +12,7 @@ export class PostsService {
     private readonly userService: UsersService,
     private readonly tagsService: TagsService,
     @InjectRepository(Post)
-    private readonly postRepository: Repository<Post>
+    private readonly postRepository: Repository<Post>,
   ) {}
 
   async create(createPostDto: CreatePostDto) {
@@ -21,7 +21,7 @@ export class PostsService {
 
     if (!author) {
       return {
-        message: "Not authorized",
+        message: 'Not authorized',
       };
     }
 

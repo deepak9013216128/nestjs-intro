@@ -1,6 +1,6 @@
 export enum postType {
-  post = "post",
-  page = "page",
-  story = "story",
-  series = "series",
+  post = 'post',
+  page = 'page',
+  story = 'story',
+  series = 'series',
 }
