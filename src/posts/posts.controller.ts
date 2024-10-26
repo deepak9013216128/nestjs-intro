@@ -12,7 +12,7 @@ import {
 import { PostsService } from './providers/posts.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreatePostDto } from './dtos/create-post.dto';
-import { patchPostDto } from './dtos/patch-post.dto';
+import { PatchPostDto } from './dtos/patch-post.dto';
 
 @Controller('posts')
 @ApiTags('Posts')
@@ -44,8 +44,8 @@ export class PostsController {
     description: 'you get 200 response if your post is updated successfully ',
   })
   @Patch()
-  updatePost(@Body() patchPostDto: patchPostDto) {
-    return patchPostDto;
+  updatePost(@Body() patchPostDto: PatchPostDto) {
+    return this.postService.update(patchPostDto);
   }
 
   @Delete()
