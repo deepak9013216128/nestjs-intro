@@ -58,7 +58,7 @@ export class UsersController {
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
   ) {
-    console.log(getUserParamDto);
+    // console.log(getUserParamDto);
     // console.log(typeof limit);
     // console.log(limit);
     // console.log(typeof page);
