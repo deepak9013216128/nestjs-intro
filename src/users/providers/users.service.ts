@@ -1,4 +1,13 @@
-import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  NotFoundException,
+  RequestTimeoutException,
+  forwardRef,
+} from '@nestjs/common';
 import { GetUsersParamDto } from '../dtos/get-users-param.dto';
 import { AuthService } from 'src/auth/provider/auth.service';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -7,6 +16,8 @@ import { Repository } from 'typeorm';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { ConfigService, ConfigType } from '@nestjs/config';
 import profileConfig from '../config/profile.config';
+import { STATUS_CODES } from 'http';
+import { error } from 'console';
 
 /**
  * Class to connect to Users table and perform business operations
@@ -28,28 +39,58 @@ export class UsersService {
   ) {}
 
   async createUser(createUserDto: CreateUserDto) {
-    const existingUser = await this.userRepository.findOne({
-      where: { email: createUserDto.email },
-    });
+    let existingUser = undefined;
 
+    try {
+      existingUser = await this.userRepository.findOne({
+        where: { email: createUserDto.email },
+      });
+    } catch (error) {
+      throw new RequestTimeoutException(
+        'Unable to process your request at the moment please try later',
+        {
+          description: 'Error connecting to the database',
+        },
+      );
+    }
     if (existingUser) {
-      return 'User already exist';
+      throw new BadRequestException(
+        'User already exists, please check your email.',
+      );
     }
 
     let newUser = this.userRepository.create(createUserDto);
-    newUser = await this.userRepository.save(newUser);
+    try {
+      newUser = await this.userRepository.save(newUser);
+    } catch (error) {
+      throw new RequestTimeoutException(
+        'Unable to process your request at the moment please try later',
+        {
+          description: 'Error connecting to the database',
+        },
+      );
+    }
 
     return newUser;
   }
 
   /** Find all users */
-  findAll(getUserParamDto: GetUsersParamDto, limit: number, page: number) {
+  async findAll(
+    getUserParamDto: GetUsersParamDto,
+    limit: number,
+    page: number,
+  ) {
     // if (!this.authService.isAuth()) {
     //   return 'Forbidden';
     // }
 
-    console.log(this.profileConfiguration.apiKey);
+    // console.log(this.profileConfiguration.apiKey);
 
+    if (getUserParamDto.id) {
+      return await this.findOneById(getUserParamDto.id);
+    }
+
+    this.customExecption();
     return [
       {
         firstName: 'Deepak',
@@ -64,8 +105,38 @@ export class UsersService {
 
   /** Find user by ID */
   async findOneById(id: number) {
-    const user = await this.userRepository.findOneBy({ id });
+    let user = undefined;
+    try {
+      user = await this.userRepository.findOneBy({ id });
+    } catch (error) {
+      throw new RequestTimeoutException(
+        'Unable to process your request at the moment please try later',
+        {
+          description: 'Error connecting to the database',
+        },
+      );
+    }
+
+    if (!user) {
+      throw new NotFoundException('User does not exist');
+    }
 
     return user;
+  }
+
+  customExecption() {
+    throw new HttpException(
+      {
+        status: HttpStatus.MOVED_PERMANENTLY,
+        error: 'The API endpoints does not exist',
+        fileName: 'user.service.ts',
+        lineNumber: 132,
+      },
+      HttpStatus.MOVED_PERMANENTLY,
+      {
+        cause: new Error(),
+        description: 'Occured because the API endpoint was permanently moved',
+      },
+    );
   }
 }

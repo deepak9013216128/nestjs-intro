@@ -1,4 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  RequestTimeoutException,
+} from '@nestjs/common';
 import { UsersService } from 'src/users/providers/users.service';
 import { Repository } from 'typeorm';
 import { Post } from '../post.entity';
@@ -18,17 +23,28 @@ export class PostsService {
 
   async create(createPostDto: CreatePostDto) {
     // find author
-    const author = await this.userService.findOneById(createPostDto.authorId);
-
-    if (!author) {
-      return {
-        message: 'Not authorized',
-      };
+    let author = undefined,
+      tags = undefined;
+    try {
+      author = await this.userService.findOneById(createPostDto.authorId);
+    } catch (error) {
+      throw new ForbiddenException('Not authorized');
     }
 
-    const tags = await this.tagsService.findMultipleTags(createPostDto.tags);
+    try {
+      tags = await this.tagsService.findMultipleTags(createPostDto.tags);
+    } catch (error) {
+      throw new RequestTimeoutException(
+        'Unable to process your request at the moment please try later',
+      );
+    }
+    console.log(tags, tags.length, createPostDto.tags.length);
+    if (!tags || tags.length !== createPostDto.tags.length) {
+      throw new BadRequestException(
+        'please check your tags ids and ensure they are correct',
+      );
+    }
 
-    console.log(createPostDto);
     // create post
     const post = this.postRepository.create({
       ...createPostDto,
@@ -38,23 +54,65 @@ export class PostsService {
 
     // return post to the user
 
-    return await this.postRepository.save(post);
+    try {
+      await this.postRepository.save(post);
+    } catch (error) {
+      throw new RequestTimeoutException(
+        'Unable to process your request at the moment please try later',
+        {
+          description: error,
+        },
+      );
+    }
+    return post;
   }
 
   async findAll(userId: string) {
-    const posts = await this.postRepository.find({
-      relations: {
-        // tags: true
-      },
-    });
+    let posts = undefined;
+    try {
+      posts = await this.postRepository.find({
+        relations: {
+          // tags: true
+        },
+      });
+    } catch (error) {
+      throw new RequestTimeoutException(
+        'Unable to process your request at the moment please try later',
+      );
+    }
     return posts;
   }
 
   async update(patchPostDto: PatchPostDto) {
     // find tags
-    const tags = await this.tagsService.findMultipleTags(patchPostDto.tags);
+    let tags = undefined,
+      post = undefined;
+
+    try {
+      tags = await this.tagsService.findMultipleTags(patchPostDto.tags);
+    } catch (error) {
+      throw new RequestTimeoutException(
+        'Unable to process your request at the moment please try later',
+      );
+    }
+    if (!tags || tags.length !== patchPostDto.tags.length) {
+      throw new BadRequestException(
+        'please check your tags ids and ensure they are correct',
+      );
+    }
+
     // find post
-    const post = await this.postRepository.findOneBy({ id: patchPostDto.id });
+    try {
+      post = await this.postRepository.findOneBy({ id: patchPostDto.id });
+    } catch (error) {
+      throw new RequestTimeoutException(
+        'Unable to process your request at the moment please try later',
+      );
+    }
+    if (!post) {
+      throw new BadRequestException('Post does not exist');
+    }
+
     // update the properties
     post.title = patchPostDto.title ?? post.title;
     post.content = patchPostDto.content ?? post.content;
@@ -71,11 +129,24 @@ export class PostsService {
     post.tags = tags;
 
     // save the post and return
-    return await this.postRepository.save(post);
+    try {
+      await this.postRepository.save(post);
+    } catch (error) {
+      throw new RequestTimeoutException(
+        'Unable to process your request at the moment please try later',
+      );
+    }
+    return post;
   }
 
   async delete(id: number) {
-    await this.postRepository.delete(id);
+    try {
+      await this.postRepository.delete(id);
+    } catch (error) {
+      throw new RequestTimeoutException(
+        'Unable to process your request at the moment please try later',
+      );
+    }
 
     return { deleted: true, id };
   }
