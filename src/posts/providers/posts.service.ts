@@ -11,6 +11,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreatePostDto } from '../dtos/create-post.dto';
 import { TagsService } from 'src/tags/providers/tags.service';
 import { PatchPostDto } from '../dtos/patch-post.dto';
+import { GetPostsDto } from '../dtos/get-posts.dto';
+import { PaginationProvider } from 'src/common/pagination/providers/pagination.provider';
+import { Paginated } from 'src/common/pagination/interfaces/paginated.interface';
 
 @Injectable()
 export class PostsService {
@@ -19,6 +22,7 @@ export class PostsService {
     private readonly tagsService: TagsService,
     @InjectRepository(Post)
     private readonly postRepository: Repository<Post>,
+    private readonly paginationProvider: PaginationProvider,
   ) {}
 
   async create(createPostDto: CreatePostDto) {
@@ -67,14 +71,16 @@ export class PostsService {
     return post;
   }
 
-  async findAll(userId: string) {
+  async findAll(
+    userId: string,
+    postQuery: GetPostsDto,
+  ): Promise<Paginated<Post>> {
     let posts = undefined;
     try {
-      posts = await this.postRepository.find({
-        relations: {
-          // tags: true
-        },
-      });
+      posts = await this.paginationProvider.paginateQuery(
+        { limit: postQuery.limit, page: postQuery.page },
+        this.postRepository,
+      );
     } catch (error) {
       throw new RequestTimeoutException(
         'Unable to process your request at the moment please try later',
