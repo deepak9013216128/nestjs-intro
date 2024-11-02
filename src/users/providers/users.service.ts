@@ -9,7 +9,7 @@ import {
   forwardRef,
 } from '@nestjs/common';
 import { GetUsersParamDto } from '../dtos/get-users-param.dto';
-import { AuthService } from 'src/auth/provider/auth.service';
+import { AuthService } from 'src/auth/providers/auth.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../user.entity';
 import { Repository } from 'typeorm';
@@ -18,6 +18,8 @@ import { ConfigService, ConfigType } from '@nestjs/config';
 import profileConfig from '../config/profile.config';
 import { UsersCreateManyProvider } from './users-create-many.provider';
 import { CreateManyUsersDto } from '../dtos/create-many-users.dto';
+import { CreateUserProvider } from './create-user.provider';
+import { FindOneUserByEmailProvider } from './find-one-user-by-email.provider';
 
 /**
  * Class to connect to Users table and perform business operations
@@ -40,42 +42,13 @@ export class UsersService {
      * Inject usersCreateManyProvider
      */
     private readonly usersCreateManyProvider: UsersCreateManyProvider,
+
+    private readonly createUserProvider: CreateUserProvider,
+    private readonly findOneUserByEmailProvider: FindOneUserByEmailProvider,
   ) {}
 
   async createUser(createUserDto: CreateUserDto) {
-    let existingUser = undefined;
-
-    try {
-      existingUser = await this.userRepository.findOne({
-        where: { email: createUserDto.email },
-      });
-    } catch (error) {
-      throw new RequestTimeoutException(
-        'Unable to process your request at the moment please try later',
-        {
-          description: 'Error connecting to the database',
-        },
-      );
-    }
-    if (existingUser) {
-      throw new BadRequestException(
-        'User already exists, please check your email.',
-      );
-    }
-
-    let newUser = this.userRepository.create(createUserDto);
-    try {
-      newUser = await this.userRepository.save(newUser);
-    } catch (error) {
-      throw new RequestTimeoutException(
-        'Unable to process your request at the moment please try later',
-        {
-          description: 'Error connecting to the database',
-        },
-      );
-    }
-
-    return newUser;
+    return this.createUserProvider.createUser(createUserDto);
   }
 
   /** Find all users */
@@ -126,6 +99,10 @@ export class UsersService {
     }
 
     return user;
+  }
+
+  async findOneByEmail(email: string): Promise<User> {
+    return await this.findOneUserByEmailProvider.findOneByEmail(email);
   }
 
   async createMany(createManyUsersDto: CreateManyUsersDto) {
