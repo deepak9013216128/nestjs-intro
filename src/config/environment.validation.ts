@@ -12,4 +12,8 @@ export default Joi.object({
   DATABASE_AUTOLOAD: Joi.string().required(),
   DATABASE_SYNC: Joi.string().required(),
   GOOGLE_PROFILE_API_KEY: Joi.string().required(),
+  JWT_SECRET: Joi.string().required(),
+  JWT_TOKEN_AUDIENCE: Joi.string().required(),
+  JWT_TOKEN_ISSUER: Joi.string().required(),
+  JWT_ACCESS_TOKEN_TTL: Joi.number().required(),
 });
